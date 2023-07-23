@@ -1,4 +1,6 @@
-export const posts = [
+import { Post } from "./components/post";
+
+export const posts: Post[] = [
     {
       id: 1,
       author: {
@@ -27,8 +29,4 @@ export const posts = [
       ],
       publishedAt: new Date('2023-05-03 18:55:00')
     } 
-  ]
-
-  export const comments = [
-    
   ]

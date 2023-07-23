@@ -1,13 +1,37 @@
-import { useState } from 'react'
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react'
 import styles from '../css/Post.module.css'
 import { Avatar } from './Avatar'
 import { Comment } from './comment'
 import { format, formatDistanceToNow} from 'date-fns'
 import ptBr from 'date-fns/locale/pt-BR'
 
-export const Post = (props) => {
+type Author = {
+    name: string
+    role: string
+    avatarUrl: string
+}
 
-    const { author, publishedAt, content } = props
+type Content = {
+    type: 'paragraph' | 'link'
+    content: string
+}
+
+export type Post = {
+    id: number
+    author: Author
+    publishedAt: Date
+    content: Content[]  
+}
+
+type PostProps = {
+    post: Post
+}
+
+
+export const Post = (props: PostProps) => {
+
+    const { post } = props
+    const { author, publishedAt, content } = post
 
     const newCommentInitialState = ''
 
@@ -23,20 +47,28 @@ export const Post = (props) => {
         addSuffix: true,
     })
 
-    const handleNewComment = () => {
+    const handleNewComment = (event: FormEvent) => {
         event.preventDefault()
         setComments([...comments, newComment])
         setNewComment(newCommentInitialState)
     }
 
-    const handleNewCommentChange = () => {
+    const handleNewCommentChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        event.target.setCustomValidity('')
         setNewComment(event.target.value)
     }
 
-    const deleteComment = (comment) => {
+
+    const handleInvalidComment = (event: InvalidEvent<HTMLTextAreaElement>) => {
+        event.target.setCustomValidity('Este campo é obrigatorio')
+    }
+
+    const deleteComment = (comment: string) => {
         const updatedList = comments.filter(listComment => listComment !== comment)
         setComments(updatedList)
     }
+
+    const commentNotValid = newComment.length === 0
 
     return (
         <article className={styles.post}>
@@ -56,7 +88,7 @@ export const Post = (props) => {
                 {content.map((line) => {
                     return (
                         <p key={line.content}>
-                            {line.type === 'link' ? <a> {line.content} </a> : line.content}
+                            {line.type === 'link' ? <a href="#"> {line.content} </a> : line.content}
                         </p>
                     )
                 })}
@@ -70,10 +102,12 @@ export const Post = (props) => {
                onChange={handleNewCommentChange} 
                name="comment"
                placeholder="Deixe um comentário" 
+               onInvalid={handleInvalidComment}
+               required
             />
 
             <footer>
-                <button type='submit'> Publicar </button>
+                <button type='submit' disabled={commentNotValid}> Publicar </button>
             </footer>
         </form>
 
