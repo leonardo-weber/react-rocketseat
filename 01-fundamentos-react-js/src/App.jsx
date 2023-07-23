@@ -4,7 +4,7 @@ import styles from './css/App.module.css'
 import { Header } from "./components/header"
 import { SideBar } from "./components/sidebar"
 import { Post } from "./components/post"
-
+import { posts } from './data'
 
 export function App() {
   return (
@@ -15,7 +15,16 @@ export function App() {
     <div className={styles.wrapper}>
       <SideBar />
       <main>
-        <Post />
+        {posts.map((post) => {
+          return (
+            <Post
+            author={post.author}
+            content={post.content}
+            publishedAt={post.publishedAt}
+            key={post.id}
+            /> 
+          )
+        })}
       </main>
     </div>
     </>

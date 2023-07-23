@@ -1,38 +1,89 @@
+import { useState } from 'react'
 import styles from '../css/Post.module.css'
+import { Avatar } from './Avatar'
+import { Comment } from './comment'
+import { format, formatDistanceToNow} from 'date-fns'
+import ptBr from 'date-fns/locale/pt-BR'
 
-export const Post = () => {
+export const Post = (props) => {
+
+    const { author, publishedAt, content } = props
+
+    const newCommentInitialState = ''
+
+    const [comments, setComments] = useState(['ola'])
+    const [newComment, setNewComment] = useState(newCommentInitialState)
+
+    const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'as' HH:mm'h'", {
+        locale: ptBr
+    })
+
+    const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
+        locale: ptBr,
+        addSuffix: true,
+    })
+
+    const handleNewComment = () => {
+        event.preventDefault()
+        setComments([...comments, newComment])
+        setNewComment(newCommentInitialState)
+    }
+
+    const handleNewCommentChange = () => {
+        setNewComment(event.target.value)
+    }
+
+    const deleteComment = (comment) => {
+        const updatedList = comments.filter(listComment => listComment !== comment)
+        setComments(updatedList)
+    }
+
     return (
         <article className={styles.post}>
             <header>
                 <div className={styles.author}>
-                    <img className={styles.avatar} src="https://github.com/leonardo-weber.png" />
+                    <Avatar src={author.avatarUrl}  />
                     <div className={styles.authorInfo}>
-                        <strong> Leonardo Weber </strong>
-                        <strong> Developer </strong>
+                        <strong> {author.name} </strong>
+                        <strong> {author.role} </strong>
                     </div>
                 </div>
 
-                <time title="11 de maio de 2022" dateTime="2022-05-11 08:13:30"> Publicado há 1hr </time>
+                <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}> {publishedDateRelativeToNow} </time>
             </header>
 
             <div className={styles.content}>
-                <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-                <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-                <p> <a href=""> jane.design/doctorcare </a> </p>
-                <p> 
-                    <a href=""> #novoprojeto </a> 
-                    <a href=""> #nlw </a> 
-                    <a href=""> #rocketseat </a> 
-                </p>
+                {content.map((line) => {
+                    return (
+                        <p key={line.content}>
+                            {line.type === 'link' ? <a> {line.content} </a> : line.content}
+                        </p>
+                    )
+                })}
             </div>
 
-        <form className={styles.commentForm}>
+        <form onSubmit={handleNewComment} className={styles.commentForm}>
             <strong> Deixe seu feedback </strong>
-            <textarea placeholder="Deixe um comentário"></textarea>
+
+            <textarea
+               value={newComment} 
+               onChange={handleNewCommentChange} 
+               name="comment"
+               placeholder="Deixe um comentário" 
+            />
+
             <footer>
                 <button type='submit'> Publicar </button>
             </footer>
         </form>
+
+        <div className={styles.commentList}>
+            {comments.map((comment) => {
+                return (
+                    <Comment comment={comment} key={comment} onDeleteComment={deleteComment} />
+                )
+            })}
+        </div>
 
         </article>
     )
