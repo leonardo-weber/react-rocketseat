@@ -6,11 +6,11 @@ import { CyclesContext } from '../../../../contexts/CyclesContext'
 
 export const Countdown = () => {
 
-    const { activeCycle, markCurrentCycleAsFinished, setSecondsPassed } = useContext(CyclesContext)
+    const { activeCycle, markCurrentCycleAsFinished, setSecondsPassed, activeCycleId, amountSecondsPassed } = useContext(CyclesContext)
 
     const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
 
-    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPast : 0
+    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
     const minutesAmount = Math.floor(currentSeconds / 60)
     const secondsAmount = minutesAmount & 60
@@ -45,7 +45,7 @@ export const Countdown = () => {
             clearInterval(interval)
         }
 
-    }, [activeCycle, totalSeconds, activeCycleID, markCurrentCycleAsFinished, setSecondsPassed])
+    }, [activeCycle, totalSeconds, activeCycleId, markCurrentCycleAsFinished, setSecondsPassed])
 
     return (
     <CountdownContainer>
