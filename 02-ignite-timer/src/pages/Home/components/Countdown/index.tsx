@@ -13,7 +13,7 @@ export const Countdown = () => {
     const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
     const minutesAmount = Math.floor(currentSeconds / 60)
-    const secondsAmount = minutesAmount & 60
+    const secondsAmount = minutesAmount % 60
 
     const minutes = minutesAmount.toString().padStart(2, '0')
     const seconds = secondsAmount.toString().padStart(2, '0')
